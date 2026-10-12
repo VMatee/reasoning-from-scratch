@@ -10,9 +10,19 @@ A compact experiment in **verifiable symbolic reasoning**. It searches arithmeti
 python -m pip install -e '.[dev]'
 python -m pytest -q
 python -m verifier_reasoning 3 3 8 8 --target 24
+python -m verifier_reasoning 3 3 8 8 --target 24 --method dp --json
 ```
 
 Example output describes an expression, individual arithmetic steps, `Verified: True`, and the count of explored states. Output trace is computed dynamically; there are no hard-coded solutions.
+
+## Two independent solvers and verifiable certificates
+
+The project includes **DFS with state memoization** and an independent
+**subset dynamic-programming solver** built from scratch with Python bitmasks
+and exact rational arithmetic. Both produce stepwise solutions, while JSON
+certificates can be independently verified for arithmetic correctness.
+
+Read the [implementation and proof-certificate walkthrough](docs/implementation.md).
 
 ## Algorithm
 
