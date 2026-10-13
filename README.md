@@ -19,9 +19,9 @@ Example output describes an expression, individual arithmetic steps, `Verified: 
 
 Given numbers $a_1,\ldots,a_n$ and a target $T$, the objective is to construct an arithmetic expression using each input occurrence once. The two solvers explore equivalent reachable results in different ways, and every reported solution must satisfy:
 
-$
-\operatorname{verify}(a_1,\ldots,a_n,\text{steps},T)=\mathrm{True}.
-$
+```math
+\mathrm{verify}(a_1,\ldots,a_n,\text{steps},T)=\mathrm{True}.
+```
 
 The full walkthrough derives the DFS state transition and subset-DP recurrence, proves the worked $[3,3,8,8]\mapsto24$ example using exact fractions, and explains which parts of a JSON certificate are actually checked.
 

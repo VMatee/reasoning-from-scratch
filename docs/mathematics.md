@@ -10,15 +10,15 @@ There is no language model behind this implementation. The interesting algorithm
 
 Let the supplied values be a multiset
 
-$$
+```math
 X=\{a_1,a_2,\ldots,a_n\},
-$$
+```
 
 and let the requested result be an integer target $T$. We want an expression constructed from the numbers in $X$ using each input occurrence **exactly once**, and using binary operations
 
-$$
+```math
 \mathcal{O}=\{+,-,\times,\div\}
-$$
+```
 
 subject to the condition that no division uses a zero denominator.
 
@@ -28,23 +28,23 @@ An expression is a binary tree. Its leaves are the supplied numbers, and each in
 
 Consider the input $[3,3,8,8]$ with target $24$. One valid expression is
 
-$$
+```math
 8\div\left(3-\frac{8}{3}\right)=24.
-$$
+```
 
 To verify this without relying on a floating-point approximation, write the intermediate values as exact fractions:
 
-$$
+```math
 8\div 3=\frac{8}{3},
-$$
+```
 
-$$
+```math
 3-\frac{8}{3}=\frac{9}{3}-\frac{8}{3}=\frac{1}{3},
-$$
+```
 
-$$
+```math
 8\div\frac{1}{3}=8\times3=24.
-$$
+```
 
 Notice that the two 3s and two 8s are **different input occurrences**, even though their numerical values match. The sequence consumes each occurrence once. The program may discover another equally valid expression; these steps are one human-readable example, not a hard-coded solver output.
 
@@ -54,18 +54,18 @@ Many implementations make a subtle mistake by using ordinary floating-point equa
 
 Python's standard-library **Fraction** represents a rational value as
 
-$$
+```math
 q=\frac{p}{r},
 \qquad p,r\in\mathbb{Z},\quad r\neq0,
-$$
+```
 
 with normalization performed automatically. Arithmetic then uses exact numerator/denominator relationships:
 
-$$
+```math
 \frac{a}{b}+\frac{c}{d}=\frac{ad+bc}{bd},
 \qquad
 \frac{a}{b}\times\frac{c}{d}=\frac{ac}{bd}.
-$$
+```
 
 The [original solver](../src/verifier_reasoning/solver.py) and the [DP solver](../src/verifier_reasoning/dp.py) both use exact Fractions. The checker can therefore compare final results using exact equality, rather than a hand-chosen floating-point tolerance.
 
@@ -77,10 +77,10 @@ At a search state containing $m$ nodes, it picks a pair, applies every valid ope
 
 Conceptually, the transition is
 
-$$
+```math
 S'=(S\setminus\{x,y\})\cup\{x\circ y\},
 \qquad \circ\in\mathcal{O},
-$$
+```
 
 where the subtraction and division cases must consider both operand orders.
 
@@ -90,10 +90,10 @@ The search succeeds only when one node remains and its exact value equals $T$.
 
 Different sequences of arithmetic operations can lead to the same multiset of remaining values. If we revisit that same numerical state, searching it again cannot reveal different *reachable final values* within this operation set. The implementation uses a sorted tuple of Fractions as a canonical key:
 
-$$
-\operatorname{key}(S)
-=\operatorname{sort}\bigl(\operatorname{value}(x_1),\ldots,\operatorname{value}(x_m)\bigr).
-$$
+```math
+\mathrm{key}(S)
+=\mathrm{sort}\bigl(\mathrm{value}(x_1),\ldots,\mathrm{value}(x_m)\bigr).
+```
 
 Caching these keys reduces repeated exploration. The solver tracks the number of visited states and stops at a configurable budget. Importantly, returning **None** when that budget is exhausted means *no solution was found within the budget*, not *no mathematical solution exists*.
 
@@ -107,19 +107,19 @@ Represent a subset $S\subseteq\{0,\ldots,n-1\}$ by an integer bitmask. The $i$th
 
 Let $\mathcal{R}(S)$ denote the set of values obtainable from exactly the numbers indexed by $S$. The base case is
 
-$$
+```math
 \mathcal{R}(\{i\})=\{a_i\}.
-$$
+```
 
 For any subset with at least two indices, enumerate every partition into two nonempty, disjoint subsets $A$ and $B$:
 
-$$
+```math
 A\cap B=\varnothing,\qquad A\cup B=S.
-$$
+```
 
 Combine reachable left and right values:
 
-$$
+```math
 \mathcal{R}(S)
 =
 \bigcup_{\substack{A\cup B=S\\A\cap B=\varnothing\\A,B\neq\varnothing}}
@@ -129,7 +129,7 @@ x\in\mathcal{R}(A),\
 y\in\mathcal{R}(B),\
 \circ\in\mathcal{O}
 \right\},
-$$
+```
 
 with undefined divisions removed and both operand orders considered where relevant.
 
@@ -150,11 +150,11 @@ The [verify_steps](../src/verifier_reasoning/solver.py) function maintains a mul
 
 After $n-1$ steps, exactly one value must remain and must equal the target. In logical notation, an accepted certificate satisfies
 
-$$
-\operatorname{verify}(X,\mathrm{steps},T)=\mathrm{True}
+```math
+\mathrm{verify}(X,\mathrm{steps},T)=\mathrm{True}
 \quad\Longrightarrow\quad
 \text{the recorded arithmetic operations transform }X\text{ into }T.
-$$
+```
 
 This implication is limited to the checker's explicit arithmetic rules. It does not prove that the supplied *expression string* has the same syntax as the step trace; in this project, expression strings are display text and **the verifier does not trust them**.
 
@@ -172,11 +172,11 @@ This repository contains tests for solvable puzzles, known unsolvable examples, 
 
 For a collection of labeled puzzles, a simple solve rate would be
 
-$$
+```math
 \mathrm{SolveRate}
 =\frac{1}{Q}\sum_{i=1}^{Q}
 \mathbf{1}[\text{a valid target expression is found for puzzle }i].
-$$
+```
 
 That quantity must be accompanied by the puzzle distribution, search budgets and timeout policy. The existing small tests are regression checks; they are not a standardized reasoning benchmark and do not evaluate a generative language model.
 
