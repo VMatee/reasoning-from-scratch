@@ -1,6 +1,6 @@
 # Reasoning from Scratch — Search + Verifier
 
-A compact experiment in **verifiable symbolic reasoning**. It searches arithmetic expression trees to solve Game-24-style tasks, records each step, and independently checks the trace using exact rational arithmetic (`fractions.Fraction`).
+This repository implements **verifiable symbolic arithmetic reasoning** with two independent search algorithms. It constructs complete expressions from the supplied numbers, records each operation using exact rational arithmetic, and verifies the solution independently of the search method.
 
 **This is not an LLM.** It demonstrates two general concepts useful for reasoning systems: **proposing candidate solutions** and **verifying their intermediate steps**. It does not perform language-model fine-tuning, chain-of-thought distillation, or natural-language reasoning.
 
@@ -14,6 +14,18 @@ python -m verifier_reasoning 3 3 8 8 --target 24 --method dp --json
 ```
 
 Example output describes an expression, individual arithmetic steps, `Verified: True`, and the count of explored states. Output trace is computed dynamically; there are no hard-coded solutions.
+
+## Mathematical formulation
+
+Given numbers $a_1,\ldots,a_n$ and a target $T$, the objective is to construct an arithmetic expression using each input occurrence once. The two solvers explore equivalent reachable results in different ways, and every reported solution must satisfy:
+
+$
+\operatorname{verify}(a_1,\ldots,a_n,\text{steps},T)=\mathrm{True}.
+$
+
+The full walkthrough derives the DFS state transition and subset-DP recurrence, proves the worked $[3,3,8,8]\mapsto24$ example using exact fractions, and explains which parts of a JSON certificate are actually checked.
+
+**[Read the mathematical and verification walkthrough →](docs/mathematics.md)**
 
 ## Two independent solvers and verifiable certificates
 
@@ -38,7 +50,7 @@ The `max_states` budget bounds search. An absent solution when a budget is exhau
 
 Connect a small policy network to prioritize branches, train a verifier from labeled incorrect steps, or compare symbolic search to token-based generation. Measure accuracy over held-out puzzles and report search budgets, not just anecdotes.
 
-## Interactive notebook
+## Reproducible notebook
 
 Open [the step-by-step notebook](notebooks/01_walkthrough.ipynb) in Jupyter after installing this repository with `python -m pip install -e ".[dev]"`.
 
